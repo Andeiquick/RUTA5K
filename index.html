@@ -1,1 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruta5K - Bolívar Business Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .progress-glow { box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen pb-20">
 
+    <!-- Header -->
+    <nav class="p-4 border-b border-slate-800 glass sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">RUTA 5K</h1>
+            <div class="text-xs bg-slate-700 px-2 py-1 rounded-full text-slate-400 uppercase tracking-widest">Bolívar Edition</div>
+        </div>
+    </nav>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+        
+        <!-- Target Progress -->
+        <section class="glass rounded-2xl p-6">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <p class="text-slate-400 text-sm">Progreso hacia la Meta</p>
+                    <h2 id="acumulado" class="text-3xl font-bold text-white">$0.00</h2>
+                </div>
+                <div class="text-right">
+                    <p id="porcentaje" class="text-emerald-400 font-bold text-xl">0%</p>
+                    <p class="text-slate-500 text-[10px]">META: $5,000</p>
+                </div>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                <div id="barra-progreso" class="bg-gradient-to-r from-emerald-500 to-blue-500 h-full transition-all duration-1000 progress-glow" style="width: 0%"></div>
+            </div>
+        </section>
+
+        <!-- Current Cash -->
+        <section class="grid grid-cols-2 gap-4">
+            <div class="glass rounded-2xl p-4 border-l-4 border-blue-500">
+                <p class="text-slate-400 text-xs">Presupuesto Actual</p>
+                <h3 id="presupuesto-cash" class="text-2xl font-bold">$175.00</h3>
+            </div>
+            <div class="glass rounded-2xl p-4 border-l-4 border-purple-500">
+                <p class="text-slate-400 text-xs">Ventas Totales</p>
+                <h3 id="ventas-cont" class="text-2xl font-bold">0</h3>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="space-y-3">
+            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider ml-1">Registrar Venta</h4>
+            
+            <button onclick="registrarVenta('Kreceup / Curvy', 40)" class="w-full bg-slate-800 hover:bg-slate-700 p-4 rounded-xl flex justify-between items-center border border-slate-700 transition-transform active:scale-95">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center text-emerald-500 mr-3">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold">Kreceup / Curvy</p>
+                        <p class="text-xs text-slate-500">Ganancia: +$40.00</p>
+                    </div>
+                </div>
+                <i class="fas fa-plus text-slate-500"></i>
+            </button>
+
+            <button onclick="registrarVenta('Sky Device', 15)" class="w-full bg-slate-800 hover:bg-slate-700 p-4 rounded-xl flex justify-between items-center border border-slate-700 transition-transform active:scale-95">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-500 mr-3">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold">Sky Device Elite</p>
+                        <p class="text-xs text-slate-500">Ganancia: +$15.00</p>
+                    </div>
+                </div>
+                <i class="fas fa-plus text-slate-500"></i>
+            </button>
+
+            <button onclick="registrarGasto()" class="w-full bg-red-500/10 hover:bg-red-500/20 p-4 rounded-xl flex justify-between items-center border border-red-500/30 transition-transform active:scale-95 text-red-400">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center text-red-500 mr-3">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold">Registrar Gasto</p>
+                        <p class="text-xs opacity-70">Shopify, Ads, Hotel, etc.</p>
+                    </div>
+                </div>
+                <i class="fas fa-minus text-red-500/50"></i>
+            </button>
+        </section>
+
+        <!-- Log -->
+        <section class="glass rounded-2xl p-4">
+            <h4 class="text-sm font-semibold text-slate-400 mb-4 flex justify-between">
+                <span>Últimos Movimientos</span>
+                <button onclick="resetData()" class="text-[10px] text-red-400 underline uppercase tracking-tighter">Reiniciar Todo</button>
+            </h4>
+            <div id="historial" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                <!-- Se llena con JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer / Export -->
+    <div class="fixed bottom-0 left-0 right-0 p-4 glass border-t border-slate-800 flex justify-center">
+        <button onclick="exportarCSV()" class="text-xs bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <i class="fas fa-file-export"></i> Exportar Datos (Backup)
+        </button>
+    </div>
+
+    <script>
+        let meta = 5000;
+        let data = JSON.parse(localStorage.getItem('bolivar_5k_data')) || { 
+            acumulado: 0, 
+            presupuesto: 175,
+            ventas_count: 0,
+            historial: [] 
+        };
+
+        function actualizarUI() {
+            document.getElementById('acumulado').innerText = `$${data.acumulado.toLocaleString()}`;
+            document.getElementById('presupuesto-cash').innerText = `$${data.presupuesto.toFixed(2)}`;
+            document.getElementById('ventas-cont').innerText = data.ventas_count;
+            
+            let perc = (data.acumulado / meta * 100).toFixed(1);
+            document.getElementById('porcentaje').innerText = perc + '%';
+            document.getElementById('barra-progreso').style.width = Math.min(perc, 100) + '%';
+            
+            // Render Historial
+            const historialDiv = document.getElementById('historial');
+            historialDiv.innerHTML = data.historial.length === 0 ? '<p class="text-slate-600 text-center text-sm py-4 italic">No hay movimientos registrados</p>' : '';
+            
+            [...data.historial].reverse().forEach(item => {
+                const entry = document.createElement('div');
+                entry.className = "flex justify-between items-center text-sm bg-slate-900/50 p-2 rounded";
+                entry.innerHTML = `
+                    <div>
+                        <p class="font-medium">${item.desc}</p>
+                        <p class="text-[10px] text-slate-500">${item.fecha}</p>
+                    </div>
+                    <span class="${item.tipo === 'venta' ? 'text-emerald-400' : 'text-red-400'} font-bold">
+                        ${item.tipo === 'venta' ? '+' : '-'}$${Math.abs(item.monto)}
+                    </span>
+                `;
+                historialDiv.appendChild(entry);
+            });
+
+            localStorage.setItem('bolivar_5k_data', JSON.stringify(data));
+        }
+
+        function registrarVenta(prod, ganancia) {
+            data.acumulado += ganancia;
+            data.presupuesto += ganancia;
+            data.ventas_count += 1;
+            data.historial.push({
+                desc: prod,
+                monto: ganancia,
+                tipo: 'venta',
+                fecha: new Date().toLocaleString('es-EC', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+            });
+            actualizarUI();
+        }
+
+        function registrarGasto() {
+            let desc = prompt("Descripción del gasto (ej: Shopify, Meta Ads, Hotel):");
+            if (!desc) return;
+            let monto = parseFloat(prompt("Monto del gasto en $USD:"));
+            if (isNaN(monto)) return;
+
+            data.presupuesto -= monto;
+            data.historial.push({
+                desc: desc,
+                monto: monto,
+                tipo: 'gasto',
+                fecha: new Date().toLocaleString('es-EC', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+            });
+            actualizarUI();
+        }
+
+        function exportarCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Fecha,Descripcion,Monto,Tipo\n";
+            data.historial.forEach(h => {
+                csvContent += `${h.fecha},${h.desc},${h.monto},${h.tipo}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Ruta5K_Backup.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function resetData() {
+            if(confirm("⚠️ ¿Estás seguro de que quieres borrar todos los datos? Esta acción no se puede deshacer.")) {
+                data = { acumulado: 0, presupuesto: 175, ventas_count: 0, historial: [] };
+                actualizarUI();
+            }
+        }
+
+        // Init
+        actualizarUI();
+    </script>
+</body>
+</html>
